@@ -5,7 +5,7 @@
     padding: 0;
 }
 
-.background {
+.backround {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -15,7 +15,7 @@
     background-image: cover;
 }
 
-.box{
+.box-input{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -30,46 +30,51 @@
     background: rgba(50,50,50,0.2);
 }
 
-.box > h2{
+.box-input > h2{
     color: rgba(145, 208, 27, 0.9);
     font-size: 35px;
     margin-bottom: 20px;
 }
 
 
-.box .input-box{
+.box-input .input-box{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: start;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-.box .input-box >label{
-    margin-bottom: 5px;
-    color: rgba(255,255,255,0.9);
-    font-size:15px;
+.box-input .input-box label{
+    position: absolute;
+    left:50px;
+    padding:20px 10px 10px;
+    color: #8f8f8f;
+    pointer-events: none;
+    letter-spacing: 0.05em;
+    transition:all 0.5s;
 }
 
-.box .input-box >input{
+.input-box input{
     box-sizing:border-box;
     color: rgba(255,255,255,0.9);
     font-size:14px;
     height: 35px;
     width: 250px;
-    background: rgba(255,255,255,0.3);
-    border: 1px solid rgba(255,255,255,0.5);
+    background: transparent;
+    border: none;
+    outline: none;
     border-radius: 5px;
     transition:0.2s;
     outline: none;
     padding:0 10px;
 }
 
-.box .input-box > input:foucus{
+.input-box input:foucus{
     border: 1px solid rgba(255,0,0,0.8);
 }
 
-.box .btn-box{
+.box-input .btn-box{
     width: 250px;
     display: flex;
     flex-direction: column;
@@ -77,29 +82,37 @@
     align-items:start;
 }
 
+.links{
+    justify-content: space-between;
+    margin: -20px;
+}
 /* forgot password */
-.box .btn-box > a{
+.links .aRouter{
     font-size:13px;
     text-decoration: none;
     color: rgba(255,255,255,0.5);
     transition: 0.2s;
     width: 250px;
     text-align: end;
+    margin: 40px;
 }
 
-.box .btn-box > a:hover{
+.links .aRouter:hover{
     color: rgba(255,255,255,1);
 }
 
-.box .btn-box > dix {
+.box-input button {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: start;
+    align-items: center;
+    margin: 20px;
 }
 
-.box .btn-box > div >button {
-    width: 120px;
+.box-input button {
+    position: relative;
+    top: 10px;
+    width: 70%;
     height: 35px;
     border: 1px solid rgba(197,81,58,0.8);
     background: rgba(255,81,58,0.8);
@@ -108,7 +121,24 @@
 }
 
 
-.box .btn-box > div > button:hover{
+.box-input button:hover{
     border:1px solid rgba(197,81,58,0.8);
     background: rgba(197,81,58,0.8);
 }
+
+.input-box input:focus + label,
+.input-box input:valid + label{
+	color: rgb(37, 93, 188);
+    transform: translateY(-34px);
+    font-weight: 400;
+    font-size: 1.1em;
+}
+
+.input-box input:focus,
+.input-box input:valid{
+    background: rgba(255,255,255,0.3);
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+
+

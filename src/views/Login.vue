@@ -1,43 +1,50 @@
 <script setup lang="ts">
+import '../assets/login_style.css';
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { nextTick, ref,  reactive } from 'vue'
-import '../assets/login_style.css';
 // import axios from 'axios'
 
+const router = useRouter();
+const route = useRoute();
 const userName = ref('');
 const userPassword = ref('');
 
 // Login and go to chat
 function login() {
     // 确认账户密码
-    useRouter().push('../chat');
+    router.push('/chat');
 }
 
 // Go to sign up page
 function signUp() {
-    useRouter().push('../signup');
+    // useRouter().push('../signup');
+}
+
+// Go to forgot page
+function forgot() {
+
 }
 </script>
 
 <template>
-    <body class="background">
-        <div class = "box">
-            <h2>Login</h2>
-            <div class = "input-box">
+    <div class = "backround">
+        <div class = "box-input">
+            <h2>All Ghost Chat</h2>
+            <div class="input-box">
+                <input type="" name="" id="" v-model="userName" required />
                 <label>Username</label>
-                <input type = "text" v-model="userName">
             </div>
             <div class = "input-box">
+                <input type="password" v-model="userPassword" required />
                 <label>Password</label>
-                <input type = "password" v-model="userPassword">
+                <i></i>
             </div>
-            <div class = "btn-box">
-                <a href = "./forgot.html">forgot password?</a>
-                <div>
-                    <button @click="login">Log in</button>
-                    <button @clidk="signUp">Sign up</button>
-                </div>
+            <div class = "links">
+                <RouterLink to="/forgot" class="aRouter">Forgot password?</RouterLink>
+                <RouterLink to="/signUp" class="aRouter">Sign up</RouterLink>
             </div>
+            <button @click="login">Login</button>
+            <routerView></routerView>
         </div>
-    </body>
+    </div>
 </template>

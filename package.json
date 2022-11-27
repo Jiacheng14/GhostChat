@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "axios": "^1.2.0",
+    "dayjs": "^1.11.6",
     "vue": "^3.2.41",
     "vue-ionicons": "^3.0.5",
     "vue-router": "^4.1.5"

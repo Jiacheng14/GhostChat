@@ -1,25 +1,24 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import login from '../views/Login.vue'
+import { createRouter, createWebHashHistory } from 'vue-router'
+import Login from '../views/Login.vue'
 import Chat from '../views/Chat.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(),
   routes: [
     {
-      path: '',
-      redirect: '/chat'
+      path: '/',
+      redirect: '/login'
     },
     {
       path: '/login',
       name: 'login',
-      component: login
+      component: Login
     },
     {
       path: '/chat',
       name: 'chat',
       component: Chat
-    }
+    },
   ]
 })
 

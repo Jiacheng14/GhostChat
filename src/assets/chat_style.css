@@ -7,7 +7,7 @@
     /*fort-family*/
 }
 
-body {
+.bodyStyle {
     display: flex;
     justify-content: center;
     align-items:center;
@@ -23,11 +23,12 @@ body {
     box-shadow:0 1px 1px 0 rgba(0, 0, 0, 0.6),0 2px 5px 0 rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: row;
+    border: none;
 }
 
 .box .leftSide{
     position:relative;
-    flex-direction: column;
+    height: 100%;
     flex:30%;
     background: #fff;
     border-right:1px solid rgba(0, 0, 0, 0.3);
@@ -35,7 +36,7 @@ body {
 
 .box .rightSide{
     position:relative;
-    flex-direction: column;
+    height: 100%;
     flex:70%;
     background: #e5ddd5;
 }
@@ -245,8 +246,9 @@ body {
 
 
 .chatBox{
-    position: relative;
+    position:relative;
     width: 100%;
+    height: calc(100% - 120px);
     padding: 50px;
     overflow: auto;
 }
@@ -258,7 +260,7 @@ body {
     margin: 5px 0;
 }
 
-.message p {
+.message p {    
     position: relative;
     right:0;
     text-align: right;

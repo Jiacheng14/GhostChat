@@ -1,29 +1,213 @@
 <script setup lang="ts">
+import dayjs from 'dayjs';
 import '../assets/chat_style.css';
 import 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js';
 import 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js';
+import { nextTick, ref,  reactive } from 'vue'
+import axios from 'axios'
 
-function chatBoxHeight() {
-    return ``
+import utc from 'dayjs/plugin/utc'
+import tz from 'dayjs/plugin/timezone'
+dayjs.extend(utc);
+dayjs.extend(tz);
+
+const text = ref('');
+const textSendT = ref([{
+    text: '',
+    userFrom: '',
+    userFromId: 0,
+    userTo: '',
+    userToId: 0,
+    time: '12:00'
+}]);
+const textSend = textSendT;
+const textSendShow = reactive({ text: '' });
+const user = ref({ headPortrait: 'friend1.jpg', name: 'a', id: 1 });
+const userTo = ref({ name: 'b', id: 2 });
+const friends = ref([
+    { headPortrait: 'friend1.jpg', name: 'b', id: 2, lastMessage: '123', lastTime: '23:00', status: "block active", unreadMessages: 0 },
+    { headPortrait: 'friend2.jpg', name: 'c', id: 3, lastMessage: '1233', lastTime: '21:00', status: "block unread", unreadMessages: 1  },
+    { headPortrait: 'friend1.jpg', name: 'd', id: 4, lastMessage: '123', lastTime: '23:00', status: "block unread", unreadMessages: 2  },
+    { headPortrait: 'friend2.jpg', name: 'e', id: 5, lastMessage: '1233', lastTime: '21:00', status: "block unread", unreadMessages: 2  },
+    { headPortrait: 'friend1.jpg', name: 'f', id: 6, lastMessage: '123', lastTime: '23:00', status: "block", unreadMessages: 0  },
+    { headPortrait: 'friend2.jpg', name: 'g', id: 7, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
+    { headPortrait: 'friend1.jpg', name: 'h', id: 8, lastMessage: '123', lastTime: '23:00', status: "block", unreadMessages: 0  },
+    { headPortrait: 'friend2.jpg', name: 'i', id: 9, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
+    { headPortrait: 'friend1.jpg', name: 'j', id: 10, lastMessage: '123', lastTime: '23:00' , status: "block", unreadMessages: 0 },
+    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
+    { headPortrait: 'friend1.jpg', name: 'j', id: 10, lastMessage: '123', lastTime: '23:00' , status: "block", unreadMessages: 0 },
+    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
+    { headPortrait: 'friend1.jpg', name: 'j', id: 10, lastMessage: '123', lastTime: '23:00' , status: "block", unreadMessages: 0 },
+    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
+    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
+    { headPortrait: 'friend1.jpg', name: 'j', id: 10, lastMessage: '123', lastTime: '23:00' , status: "block", unreadMessages: 0 },
+    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
+    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
+    { headPortrait: 'friend1.jpg', name: 'j', id: 10, lastMessage: '123', lastTime: '23:00' , status: "block", unreadMessages: 0 },
+    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
+]);
+const searchId = ref('');
+
+
+textSend.value = [
+    {
+        text: '123123',
+        userFrom: 'a',
+        userFromId: 1,
+        userTo: 'b',
+        userToId: 2,
+        time: '12:00'
+    },
+    {
+        text: '321321',
+        userFrom: 'b',
+        userFromId: 2,
+        userTo: 'a',
+        userToId: 1,
+        time: '12:01'
+    },
+    {
+        text: '123123',
+        userFrom: 'a',
+        userFromId: 1,
+        userTo: 'b',
+        userToId: 2,
+        time: '12:02'
+    }
+];
+
+async function send() {
+    if (text.value !== '') {
+        textSend.value.push({
+            text: text.value,
+            userFrom: user.value.name,
+            userFromId: user.value.id,
+            userTo: userTo.value.name,
+            userToId: userTo.value.id,
+            time: await dayjs().tz(await dayjs.tz.guess()).format('HH:mm')
+        });
+        // showTextSend();
+        axios({
+            url: './text',
+            method: 'post',
+            data: {
+                type: 'message send',
+                text: text.value,
+                userFromID: user.value.id,
+                userToID: userTo.value.id
+            }
+        }).then((res) => {
+            console.log(res);
+        }).catch((err) => {
+            console.log(err);
+        });
+        text.value = '';
+        textSetToBottom();
+    }
+}
+
+// function onInput(inputText: any) {
+//     if (inputText.value.endsWith('\n')) {
+//         text.value = '123123';
+
+//         send();
+//     }
+// }
+
+function textSetToBottom() {
+    const area = document.getElementById('chatBox');
+    if (area !== null) {
+        nextTick(() => {
+            area.scrollTop = area.scrollHeight;
+        });
+    }
+}
+
+async function changeTo(changeToId: number) {
+    let checkInFriends = false;
+    friends.value.forEach((i) => {
+        if (i.id == changeToId) { //存在，直接切换
+            friends.value.forEach((j) => {
+                if (j.id == userTo.value.id) {
+                    j.status = 'block';
+                }
+            });
+            i.status = 'block active';
+            i.unreadMessages = 0;
+            userTo.value.name = i.name;
+            userTo.value.id = i.id;
+            // Get messages from data base
+            /* 中间为测试用 */
+            textSend.value = [
+                {
+                    text: 'hello ' + userTo.value.name,
+                    userFrom: 'a',
+                    userFromId: 1,
+                    userTo: 'b',
+                    userToId: 2,
+                    time: '12:00'
+                },
+                {
+                    text: '321321',
+                    userFrom: 'b',
+                    userFromId: 2,
+                    userTo: 'a',
+                    userToId: 1,
+                    time: '12:01'
+                },
+                {
+                    text: '123123123123123',
+                    userFrom: 'a',
+                    userFromId: 1,
+                    userTo: 'b',
+                    userToId: 2,
+                    time: '12:02'
+                },
+                {
+                    text: '321321dsafasd',
+                    userFrom: 'b',
+                    userFromId: 2,
+                    userTo: 'a',
+                    userToId: 1,
+                    time: '12:05'
+                },
+            ];
+            /* 中间为测试用 */
+            checkInFriends = true;
+        }
+    });
+    if (!checkInFriends) { //不存在，请求服务器
+        
+    }
+    // await freshTextArea();
+}
+
+function search() {
+    // 从服务器搜索id 或者名字并存入friends
+
+}
+
+function notSearching() {
+    return searchId.value === null || searchId.value === '';
 }
 </script>
 
 <template>
-    <body>
+    <div class="bodyStyle">
         <div class = "box">
             <div class = "leftSide">
                 <div class = "header">
                     <div class = "userpic">
                         <!-- 用户的头像 -->
-                        <img src = "/image/userImg.jpg" class = "cover">
+                        <img :src = "user.headPortrait" class = "cover">
                     </div>
                     <div class = "userName">
                         <!-- 用户的名字 -->
-                        <h4>August<br><span>uid:108588722</span></h4>
+                        <h4>{{ user.name }}<br><span>uid:{{ user.id }}</span></h4>
                     </div>
                     <ul class = "header_icons">
                         <!--  https://ionic.io/ionicons  -->
-                        <li><ion-icon onclick="location.href = './login.html'" name="log-out-outline"></ion-icon></li>
+                        <li><ion-icon onclick="location.href = './login'" name="log-out-outline"></ion-icon></li>
                         <li><ion-icon name="chatbubble-ellipses-outline"></ion-icon></li>
                         <li><ion-icon name="archive-outline"></ion-icon></li>
                     </ul>
@@ -31,283 +215,83 @@ function chatBoxHeight() {
                 <!-- Search -->
                 <div class = "searchBar">
                     <div>
-                        <input type = "text" placeholder="search or start chat here">
+                        <input type = "text" placeholder="search or start chat here" v-model="searchId" @input="search">
                         <ion-icon name="search-outline"></ion-icon>
                     </div>
                 </div>
                 <!-- search list // history chat list -->
                 <div class = "chatlist">
-
-                    <div class = "block active">
-                        <div class = "imgbk">
-                            <!-- 头像 -->
-                            <img src = "/image/friend1.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <!-- 联系人名字 -->
-                                <h4>Joey W</h4>
-                                <!-- 时间 -->
-                                <p class = "time">24:00</p>
+                    <div v-if="notSearching()">
+                        <div  v-for="friend in friends" :class = "friend.status" @click="changeTo(friend.id)">
+                            <div class = "imgbk">
+                                <!-- 头像 -->
+                                <img :src = "friend.headPortrait" class = "cover">
                             </div>
-                            <div class = "message_list">
-                                <!-- 消息 -->
-                                <p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊阿啊啊啊</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 如果未读需要将“block”改为“block unread” 并且在“message——list”中添加<b>-->
-                    <div class = "block unread">
-                        <div class = "imgbk">
-                            <img src = "/image/groupchat1.png" class = "cover">
-                        </div>
-                        <div class = "infors" onclick="location.href = './groupchat.html'">
-                            <div class = "inforHead">
-                                <h4>葉月龙纪元</h4>
-                                <p class = "time">23:35</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>What's Up</p>
-                                <!-- 未读消息 -->
-                                <b>1</b>
+                            <div class = "infors">
+                                <div class = "inforHead">
+                                    <!-- 联系人名字 -->
+                                    <h4>{{ friend.name }}</h4>
+                                    <!-- 时间 -->
+                                    <p class = "time">{{ friend.lastTime }}</p>
+                                </div>
+                                <div class = "message_list">
+                                    <!-- 消息 -->
+                                    <p>{{ friend.lastMessage }}</p>
+                                    <b v-if="friend.unreadMessages!==0">{{ friend.unreadMessages }}</b>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class = "block unread">
-                        <div class = "imgbk">
-                            <img src = "/image/friend3.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>JOE</h4>
-                                <p class = "time">21:35</p>
+                    <div v-else>
+                        <div  v-for="friend in friends" :class = "friend.status" @click="changeTo(friend.id)">
+                            <div class = "imgbk">
+                                <!-- 头像 -->
+                                <img :src = "friend.headPortrait" class = "cover">
                             </div>
-                            <div class = "message_list">
-                                <p>你在干啥</p>
-                                <b>2</b>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class = "block unread">
-                        <div class = "imgbk">
-                            <img src = "/image/friend4.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>JiaYue</h4>
-                                <p class = "time">20:52</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>哎对对对</p>
-                                <b>1</b>
+                            <div class = "infors">
+                                <div class = "inforHead">
+                                    <!-- 联系人名字 -->
+                                    <h4>{{ friend.name }}</h4>
+                                </div>
+                                <div class = "message_list">
+                                    <!-- 消息 -->
+                                    <p>uid: {{ friend.id }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class = "block">
-                        <div class = "imgbk">
-                            <img src = "/image/friend5.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>Ximing</h4>
-                                <p class = "time">20:32</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>这个地方可以改一下</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class = "block">
-                        <div class = "imgbk">
-                            <img src = "/image/friend6.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>yutong</h4>
-                                <p class = "time">19:25</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>嘶</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class = "block">
-                        <div class = "imgbk">
-                            <img src = "/image/friend7.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>李杰西</h4>
-                                <p class = "time">17:05</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>吃屎吧你</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class = "block">
-                        <div class = "imgbk">
-                            <img src = "/image/friend8.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>Yolanda</h4>
-                                <p class = "time">12:05</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>啊这</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class = "block">
-                        <div class = "imgbk">
-                            <img src = "/image/friend9.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>47111</h4>
-                                <p class = "time">11:25</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>对啊对啊</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class = "block unread">
-                        <div class = "imgbk">
-                            <img src = "/image/friend10.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>肖肖乐</h4>
-                                <p class = "time">8:25</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>草</p>
-                                <b>2</b>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class = "block">
-                        <div class = "imgbk">
-                            <img src = "/image/friend11.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>大傻杯</h4>
-                                <p class = "time">6:25</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>akshasfhasf</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class = "block">
-                        <div class = "imgbk">
-                            <img src = "/image/friend11.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>大傻杯</h4>
-                                <p class = "time">6:25</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>akshasfhasf</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class = "block">
-                        <div class = "imgbk">
-                            <img src = "/image/friend11.jpg" class = "cover">
-                        </div>
-                        <div class = "infors">
-                            <div class = "inforHead">
-                                <h4>大傻杯</h4>
-                                <p class = "time">6:25</p>
-                            </div>
-                            <div class = "message_list">
-                                <p>akshasfhasf</p>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
-            </div>    
-
-
+            </div>
 
             <div class = "rightSide">
                 <div class = "header">
                     <div class = "chatName">
                         <!-- 聊天对象的名字 -->
-                        <h4>Joey W</h4>
+                        <h4>{{ userTo.name }}</h4>
                     </div>
                     <ul class = "header_icons">
-                        <!--  https://ionic.io/ionicons  --> 
+                        <!--  https://ionic.io/ionicons  -->
                         <li><ion-icon name="happy-outline"></ion-icon></li>
                         <li><ion-icon name="add-circle-outline"></ion-icon></li>
                         <li><ion-icon name="folder-outline"></ion-icon></li>
                     </ul>
                 </div>
-                <div class = "chatBox" style="height: calc(100px+200px)">
+
+                <div class = "chatBox" id="chatBox">
                     <a href = "./forgot.html">history messages</a>
-                    <div class = "message self">
-                        <p>Hi<br><span>12:15</span></p>
-                    </div>
-                    <div class = "message other">
-                        <p>Hello<br><span>12:15</span></p>
-                    </div>
-                    <div class = "message other">
-                        <p>我就是Joey,Joey就是我<br><span>12:15</span></p>
-                    </div>
-                    <div class = "message self">
-                        <p>好的吧……？<br><span>12:15</span></p>
-                    </div>
-                    <div class = "message self">
-                        <p>你知不知道那种<br><span>12:15</span></p>
-                    </div>
-                    <div class = "message self">
-                        <p>没有背景的背景 背景是镂空的的图片<br><span>12:15</span></p>
-                    </div>
-                    <div class = "message other">
-                        <p>草，这破题我花了我两个小时 离谱了 这么简单的题 我写了两个小时<br><span>12:15</span></p>
-                    </div>
-                    <div class = "message self">
-                        <p><img src="/image/bqb.png"><span>12:15</span></p>
-                    </div>
-                    <div class = "message other">
-                        <p>我本来想着做道题然后接着写物理的<br><span>12:15</span></p>
-                    </div>
-                    <div class = "message other">
-                        <p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊阿啊啊啊<br><span>12:15</span></p>
-                    </div>
-                    <div class = "message other">
-                        <p><img src="/image/chatpic2.png"><span>12:15</span></p>
-                    </div>
-                    <div class = "message other">
-                        <p><img src="/image/chatpic3.jpg"><span>12:15</span></p>
+                    <div v-for="message in textSend" :class = "message.userFrom===user.name?'message self':'message other'">
+                        <p>{{ message.text }}<br><span>{{ message.time }}</span></p>
                     </div>
                 </div>
+
                 <div class = "chatBox-input">
                     <ion-icon name="beer-outline"></ion-icon>
                     <ion-icon name="bed-outline"></ion-icon>
-                    <input type = "text" placeholder= "Type something here">
-                    <ion-icon name="send-outline"></ion-icon>
+                    <input type = "text" placeholder= "Type something here" v-model="text">
+                    <ion-icon name="send-outline" @click="send"></ion-icon>
                 </div>
+
             </div>
         </div>
-
-        <!-- icon网站必要的script -->
-    </body>
+    </div>
 </template>
