@@ -215,7 +215,7 @@ function notSearching() {
                 <!-- Search -->
                 <div class = "searchBar">
                     <div>
-                        <input type = "text" placeholder="search or start chat here" v-model="searchId" @input="search">
+                        <input type = "text" placeholder="search for uid or username" v-model="searchId" @input="search">
                         <ion-icon name="search-outline"></ion-icon>
                     </div>
                 </div>
