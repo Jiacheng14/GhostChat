@@ -2,7 +2,7 @@
 import '../assets/login_style.css';
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { nextTick, ref,  reactive } from 'vue'
-// import axios from 'axios'
+import axios from 'axios'
 
 const router = useRouter();
 const route = useRoute();
@@ -13,6 +13,14 @@ const userPassword = ref('');
 function login() {
     // 确认账户密码
     router.push('/chat');
+    // axios.post('/login', {
+    //     userName: userName.value,
+    //     passWord: userPassword.value
+    // }).then((res) => {
+    //     console.log(res);
+    // }).catch((err) => {
+    //     console.log(err);
+    // });
 }
 
 // Go to sign up page
@@ -41,7 +49,7 @@ function forgot() {
             </div>
             <div class = "links">
                 <RouterLink to="/forgot" class="aRouter">Forgot password?</RouterLink>
-                <RouterLink to="/signUp" class="aRouter">Sign up</RouterLink>
+                <RouterLink to="/signup" class="aRouter">Sign up</RouterLink>
             </div>
             <button @click="login">Login</button>
             <routerView></routerView>

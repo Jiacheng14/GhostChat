@@ -8,6 +8,7 @@ import axios from 'axios'
 
 import utc from 'dayjs/plugin/utc'
 import tz from 'dayjs/plugin/timezone'
+import router from '@/router';
 dayjs.extend(utc);
 dayjs.extend(tz);
 
@@ -190,6 +191,10 @@ function search() {
 function notSearching() {
     return searchId.value === null || searchId.value === '';
 }
+
+// function quit() {
+//     router.push('../login');
+// }
 </script>
 
 <template>
@@ -207,7 +212,7 @@ function notSearching() {
                     </div>
                     <ul class = "header_icons">
                         <!--  https://ionic.io/ionicons  -->
-                        <li><ion-icon onclick="location.href = './login'" name="log-out-outline"></ion-icon></li>
+                        <!-- <li><ion-icon @click="quit" name="log-out-outline"></ion-icon></li> -->
                         <li><ion-icon name="chatbubble-ellipses-outline"></ion-icon></li>
                         <li><ion-icon name="archive-outline"></ion-icon></li>
                     </ul>
