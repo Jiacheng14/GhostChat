@@ -8,19 +8,20 @@ const router = useRouter();
 const route = useRoute();
 const userName = ref('');
 const userPassword = ref('');
+const aaa = ref();
 
 // Login and go to chat
 function login() {
     // 确认账户密码
-    router.push('/chat');
-    // axios.post('/login', {
-    //     userName: userName.value,
-    //     passWord: userPassword.value
-    // }).then((res) => {
-    //     console.log(res);
-    // }).catch((err) => {
-    //     console.log(err);
-    // });
+    // router.push('/chat');
+    axios.post('./api/login', {
+        username: userName.value,
+        password: userPassword.value
+    }).then((res) => {
+        aaa.value = res;
+    }).catch((err) => {
+        aaa.value = err;
+    });
 }
 
 // Go to sign up page
@@ -52,7 +53,8 @@ function forgot() {
                 <RouterLink to="/signup" class="aRouter">Sign up</RouterLink>
             </div>
             <button @click="login">Login</button>
-            <routerView></routerView>
+            <!-- <routerView></routerView> -->
+            <p>{{ aaa }}</p>
         </div>
     </div>
 </template>

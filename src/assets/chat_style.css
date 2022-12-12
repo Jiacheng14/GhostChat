@@ -155,7 +155,7 @@
 .chatlist{
     position: relative;
     height: calc(100% - 110px);    /* header +  searchBar height*/
-    overFlow-y: auto;
+    overflow-y: auto;
     background: rgb(84, 82, 82);
 }
 

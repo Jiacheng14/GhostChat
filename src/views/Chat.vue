@@ -12,7 +12,6 @@ import router from '@/router';
 dayjs.extend(utc);
 dayjs.extend(tz);
 
-const text = ref('');
 const textSendT = ref([{
     text: '',
     userFrom: '',
@@ -22,87 +21,64 @@ const textSendT = ref([{
     time: '12:00'
 }]);
 const textSend = textSendT;
-const textSendShow = reactive({ text: '' });
+const text = ref('');
 const user = ref({ headPortrait: 'friend1.jpg', name: 'a', id: 1 });
 const userTo = ref({ name: 'b', id: 2 });
-const friends = ref([
-    { headPortrait: 'friend1.jpg', name: 'b', id: 2, lastMessage: '123', lastTime: '23:00', status: "block active", unreadMessages: 0 },
-    { headPortrait: 'friend2.jpg', name: 'c', id: 3, lastMessage: '1233', lastTime: '21:00', status: "block unread", unreadMessages: 1  },
-    { headPortrait: 'friend1.jpg', name: 'd', id: 4, lastMessage: '123', lastTime: '23:00', status: "block unread", unreadMessages: 2  },
-    { headPortrait: 'friend2.jpg', name: 'e', id: 5, lastMessage: '1233', lastTime: '21:00', status: "block unread", unreadMessages: 2  },
-    { headPortrait: 'friend1.jpg', name: 'f', id: 6, lastMessage: '123', lastTime: '23:00', status: "block", unreadMessages: 0  },
-    { headPortrait: 'friend2.jpg', name: 'g', id: 7, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
-    { headPortrait: 'friend1.jpg', name: 'h', id: 8, lastMessage: '123', lastTime: '23:00', status: "block", unreadMessages: 0  },
-    { headPortrait: 'friend2.jpg', name: 'i', id: 9, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
-    { headPortrait: 'friend1.jpg', name: 'j', id: 10, lastMessage: '123', lastTime: '23:00' , status: "block", unreadMessages: 0 },
-    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
-    { headPortrait: 'friend1.jpg', name: 'j', id: 10, lastMessage: '123', lastTime: '23:00' , status: "block", unreadMessages: 0 },
-    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
-    { headPortrait: 'friend1.jpg', name: 'j', id: 10, lastMessage: '123', lastTime: '23:00' , status: "block", unreadMessages: 0 },
-    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
-    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
-    { headPortrait: 'friend1.jpg', name: 'j', id: 10, lastMessage: '123', lastTime: '23:00' , status: "block", unreadMessages: 0 },
-    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
-    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
-    { headPortrait: 'friend1.jpg', name: 'j', id: 10, lastMessage: '123', lastTime: '23:00' , status: "block", unreadMessages: 0 },
-    { headPortrait: 'friend2.jpg', name: 'k', id: 11, lastMessage: '1233', lastTime: '21:00', status: "block", unreadMessages: 0  },
-]);
+const friendsT = ref([{
+    headPortrait: '1.jpg',
+    name: 'a',
+    id: 1,
+    lastMessage: '1',
+    lastTime: '12:00',
+    status: 'bolck unread',
+    unreadMessages: 0,
+}]);
+const friends = friendsT;
 const searchId = ref('');
-
-
-textSend.value = [
-    {
-        text: '123123',
-        userFrom: 'a',
-        userFromId: 1,
-        userTo: 'b',
-        userToId: 2,
-        time: '12:00'
-    },
-    {
-        text: '321321',
-        userFrom: 'b',
-        userFromId: 2,
-        userTo: 'a',
-        userToId: 1,
-        time: '12:01'
-    },
-    {
-        text: '123123',
-        userFrom: 'a',
-        userFromId: 1,
-        userTo: 'b',
-        userToId: 2,
-        time: '12:02'
+axios.post('/message', {
+        params: {
+            friendUserId: userTo.value.id,
+        }
+    }).then((res) => {
+        console.log(res);
+        textSend.value = res.data.success;
+    }).catch((err) => {
+        console.log(err);
     }
-];
+);
 
 async function send() {
     if (text.value !== '') {
+        // showTextSend();
+        text.value = '';
         textSend.value.push({
             text: text.value,
             userFrom: user.value.name,
             userFromId: user.value.id,
             userTo: userTo.value.name,
             userToId: userTo.value.id,
-            time: await dayjs().tz(await dayjs.tz.guess()).format('HH:mm')
+            time: await dayjs().tz(await dayjs.tz.guess()).format('HH:mm'),
         });
-        // showTextSend();
-        axios({
-            url: './text',
-            method: 'post',
-            data: {
-                type: 'message send',
-                text: text.value,
-                userFromID: user.value.id,
-                userToID: userTo.value.id
-            }
+        axios.post('/message', {
+            text: text.value,
+            userToID: userTo.value.id,
         }).then((res) => {
             console.log(res);
         }).catch((err) => {
             console.log(err);
         });
-        text.value = '';
+
+        axios.post('/message', {
+                params: {
+                    friendUserId: userTo.value.id,
+                }
+            }).then((res) => {
+                console.log(res);
+                textSend.value = res.data.success;
+            }).catch((err) => {
+                console.log(err);
+            }
+        );
         textSetToBottom();
     }
 }
@@ -137,8 +113,7 @@ async function changeTo(changeToId: number) {
             i.unreadMessages = 0;
             userTo.value.name = i.name;
             userTo.value.id = i.id;
-            // Get messages from data base
-            /* 中间为测试用 */
+            /* 中间为测试用
             textSend.value = [
                 {
                     text: 'hello ' + userTo.value.name,
@@ -173,7 +148,19 @@ async function changeTo(changeToId: number) {
                     time: '12:05'
                 },
             ];
-            /* 中间为测试用 */
+             中间为测试用 */
+            // Get messages from data base
+            axios.post('/message', {
+                    params: {
+                        friendUserId: userTo.value.id,
+                    }
+                }).then((res) => {
+                    console.log(res);
+                    textSend.value = res.data.success;
+                }).catch((err) => {
+                    console.log(err);
+                }
+            );
             checkInFriends = true;
         }
     });
@@ -192,9 +179,9 @@ function notSearching() {
     return searchId.value === null || searchId.value === '';
 }
 
-// function quit() {
-//     router.push('../login');
-// }
+function quit() {
+    router.push('../login');
+}
 </script>
 
 <template>
@@ -212,7 +199,7 @@ function notSearching() {
                     </div>
                     <ul class = "header_icons">
                         <!--  https://ionic.io/ionicons  -->
-                        <!-- <li><ion-icon @click="quit" name="log-out-outline"></ion-icon></li> -->
+                        <li><ion-icon @click="quit" name="log-out-outline"></ion-icon></li>
                         <li><ion-icon name="chatbubble-ellipses-outline"></ion-icon></li>
                         <li><ion-icon name="archive-outline"></ion-icon></li>
                     </ul>
